@@ -1,0 +1,73 @@
+<html>
+
+<head>
+  <link rel="stylesheet" href="style.css">
+</head>
+<script lang="javascript">
+
+  let counter = 0;
+
+  let stringgen = () => {
+    if (counter % 5 === 0) {
+      let number_string = "";
+      let numberArray = new Uint8Array(3000);
+      window.crypto.getRandomValues(numberArray);
+      for (let index = 0; index < 3000; index += 100) {
+        number_string = number_string.concat(`<div>${Array.from(numberArray.subarray(index, index + 200)).map((x) => x.toString(16).padEnd(2, "0")).join("").toUpperCase()}</div>`);
+      }
+      document.getElementById("numbers_text").innerHTML = number_string;
+    }
+    counter += 1;
+    window.requestAnimationFrame(stringgen);
+  };
+
+  window.requestAnimationFrame(stringgen);
+  const secondsToMinSecPadded = time => {
+    const minutes = `${Math.floor(time / 60)}`.padStart(2, "0");
+    const seconds = `${time - minutes * 60}`.padStart(2, "0");
+    return `${minutes}:${seconds}`;
+  };
+  window.addEventListener("load", () => {
+    let params = new URLSearchParams(window.location.search);
+    let seconds = params.get("countdown");
+    let message = params.get("message");
+    if (seconds !== null) {
+      document.getElementById("lower_center").style.display = "block";
+      let countdown = () => {
+        seconds -= 1;
+        document.getElementById("lower_center").innerHTML = secondsToMinSecPadded(seconds);
+        if (seconds > 0) {
+          setTimeout(countdown, 1000);
+        } else {
+          document.getElementById("lower_center").innerHTML = "Any time now...";
+        }
+      };
+      countdown();
+    } else if (message !== null) {
+      let lower_center = document.getElementById("lower_center");
+      lower_center.style.display = "block";
+      lower_center.innerHTML = `<marquee>${message}</marquee>`
+    }
+  });
+</script>
+<body>
+  <div class="main">
+      <div class="numbers">
+        <div class="numbers_gradient">
+          <div class="numbers_text" id="numbers_text">            
+          </div>
+        </div>
+        <div class="content">
+          <div class="foxbox">
+          </div>
+        </div>
+        <div class="content">
+          <div class="lower_center" id="lower_center">
+          </div>
+        </div>
+      </div>
+    </div>
+    
+</body>
+
+</html>
